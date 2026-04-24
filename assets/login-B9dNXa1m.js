@@ -1,0 +1,1 @@
+import{t as e}from"./useApi-CIDYX2_u.js";var t=`JAPAN TRIP`,{VITE_URL:n}={VITE_URL:`https://vue3-course-api.hexschool.io/v2`},r=t=>e().post(`${n}/admin/signin`,t),i=()=>e().post(`${n}/api/user/check`),a=()=>e().post(`${n}/logout`);export{t as i,r as n,a as r,i as t};

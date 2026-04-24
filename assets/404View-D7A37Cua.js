@@ -1,0 +1,1 @@
+import{C as e,f as t,l as n}from"./vue.runtime.esm-bundler-iquX2EGf.js";var r=(e,t)=>{let n=e.__vccOpts||e;for(let[e,r]of t)n[e]=r;return n},i={},a={class:`container`};function o(r,i){return e(),t(`div`,a,[...i[0]||=[n(`h1`,null,`404`,-1),n(`p`,null,`找不到頁面`,-1)]])}var s=r(i,[[`render`,o]]);export{s as default};

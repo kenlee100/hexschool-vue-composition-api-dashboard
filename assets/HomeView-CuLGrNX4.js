@@ -1,0 +1,1 @@
+import{S as e}from"./vue.runtime.esm-bundler-iquX2EGf.js";import{a as t}from"./index-BM9MmkPA.js";var n={__name:`HomeView`,setup(n){let r=t();return e(()=>{r.isLoading=!0,setTimeout(()=>{r.isLoading=!1},300)}),(e,t)=>`Welcome`}};export{n as default};
