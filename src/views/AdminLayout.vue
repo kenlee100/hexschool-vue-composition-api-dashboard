@@ -4,83 +4,54 @@
     <section class="data-section flex-grow-1 pb-3">
       <HeaderBar :logout="logout" />
       <div class="container-fluid">
-        <PageTitle page-title="test"></PageTitle>
+        <PageTitle page-title="test" />
         <RouterView />
       </div>
-      <VueLoading :active="isLoading"></VueLoading>
     </section>
   </div>
 </template>
-<script>
-const { VITE__URL } = import.meta.env;
-import { RouterView } from "vue-router";
-import NavBar from "@/components/admin/NavBar.vue";
-import HeaderBar from "@/components/admin/HeaderBar.vue";
-import PageTitle from "@/components/admin/AdminPageTitle.vue";
-import { mapState } from "pinia";
-import toast from "@/utils/toast";
-import { useLoadingState } from "@/stores/common.js";
-export default {
-  components: { RouterView, NavBar, HeaderBar, PageTitle },
-  methods: {
-    checkLogin() {
-      useLoadingState().isLoading = true;
-      const token = document.cookie.replace(
-        // userToken Token名稱
-        /(?:(?:^|.*;\s*)userToken\s*=\s*([^;]*).*$)|^.*$/,
-        "$1"
-      );
-      if (token) {
-        this.$http.defaults.headers.common.Authorization = token;
-        this.$http
-          .post(`${VITE__URL}/api/user/check`)
-          .then(() => {})
-          .catch((err) => {
-            // 驗證失敗轉到登入
-            this.$router.push("/");
-            useLoadingState().isLoading = false;
-            toast.fire({
-              icon: "error",
-              title: `${err.response.data.message}`,
-            });
-          });
-      } else {
-        useLoadingState().isLoading = false;
-        toast
-          .fire({
-            icon: "error",
-            title: `請先登入`,
-          })
-          .then(() => {
-            this.$router.push("/");
-          });
-      }
-    },
-    logout() {
-      useLoadingState().isLoading = true;
-      this.$http
-        .post(`${VITE__URL}/logout`)
-        .then(() => {
-          useLoadingState().isLoading = false;
-          document.cookie = "userToken=;expires=;";
-          this.$router.push("/");
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
-    },
-  },
-  computed: {
-    ...mapState(useLoadingState, ["isLoading"]),
-  },
-  created() {
-    this.checkLogin();
-  },
+<script setup>
+import toast from '@/utils/toast';
+import { check, logout as logoutApi } from '@/apis/login';
+import { useLoadingState } from '@/stores/common.js';
+import { clearAuthToken, getAuthToken } from '@/utils/authToken';
+
+const router = useRouter();
+const loadingState = useLoadingState();
+
+const checkLogin = async () => {
+  loadingState.isLoading = true;
+  const token = getAuthToken();
+  if (!token) {
+    router.push('/');
+    toast.fire({
+      icon: 'error',
+      title: `請先登入`
+    });
+    loadingState.isLoading = false;
+    return;
+  }
+  try {
+    await check();
+  } catch (error) {
+    router.push('/');
+  } finally {
+    loadingState.isLoading = false;
+  }
 };
+
+const logout = async () => {
+  loadingState.isLoading = true;
+  try {
+    await logoutApi();
+    clearAuthToken();
+    router.push('/');
+  } finally {
+    loadingState.isLoading = false;
+  }
+};
+
+checkLogin();
 </script>
 
 <style lang="scss">
@@ -88,12 +59,14 @@ export default {
   top: 84px !important;
   z-index: 2001;
 }
+
 .swal2-actions {
   width: 100%;
   padding-top: 24px;
   padding-left: 16px;
   padding-right: 16px;
 }
+
 .swal2-confirm,
 .swal2-cancel {
   flex: 1;

@@ -2,12 +2,20 @@
   <RouterView />
 </template>
 <script setup>
-import { onMounted, ref } from "vue";
-import { RouterView } from "vue-router";
-const isLoading = ref(false);
-onMounted(() => {
-  isLoading.value = true;
-});
-</script>
+import { RouterView } from 'vue-router';
+import { useLoading } from 'vue-loading-overlay';
+const loadingState = useLoadingState();
+const loading = useLoading();
+let loader = null;
 
-<style lang="scss"></style>
+watch(
+  () => loadingState.isLoading,
+  (val) => {
+    if (val) {
+      loader = loading.show();
+    } else {
+      loader?.hide();
+    }
+  }
+);
+</script>

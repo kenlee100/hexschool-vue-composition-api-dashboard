@@ -7,7 +7,7 @@
             class="page-link"
             href="#"
             aria-label="Previous"
-            @click.prevent="getList(pages.current_page - 1)"
+            @click.prevent="changePage(pages.current_page - 1)"
           >
             <span aria-hidden="true">&laquo;</span>
           </a>
@@ -20,24 +20,16 @@
           :key="index"
         >
           <!-- 當下頁面狀態時 顯示 span標籤元素 -->
-          <span v-if="pages.current_page === item" class="page-link">{{
-            index + 1
-          }}</span>
+          <span v-if="pages.current_page === item" class="page-link">{{ index + 1 }}</span>
           <!-- 否則 顯示 a 標籤元素 + 可切換分頁資料事件 -->
-          <a
-            v-else
-            class="page-link"
-            href="#"
-            @click.prevent="$emit('change-page', item)"
-            >{{ index + 1 }}</a
-          >
+          <a v-else class="page-link" href="#" @click.prevent="changePage(item)">{{ item }}</a>
         </li>
         <li class="page-item" :class="{ disabled: !pages.has_next }">
           <a
             class="page-link"
             href="#"
             aria-label="Next"
-            @click.prevent="getList(pages.current_page + 1)"
+            @click.prevent="changePage(pages.current_page + 1)"
           >
             <span aria-hidden="true">&raquo;</span>
           </a>
@@ -46,19 +38,19 @@
     </nav>
   </div>
 </template>
-<script>
-export default {
-  props: {
-    pages: {
-      type: Object,
-      default() {},
-    },
-    //
-    getList: {
-      type: Function,
-      default: () => {},
-    },
-  },
-  emits: ["change-page"],
+<script setup>
+const props = defineProps({
+  pages: {
+    type: Object,
+    default: () => ({})
+  }
+});
+
+const emit = defineEmits(['change-page']);
+
+const changePage = (page) => {
+  const totalPages = props.pages?.total_pages || 0;
+  if (page < 1 || page > totalPages || page === props.pages?.current_page) return;
+  emit('change-page', page);
 };
 </script>
