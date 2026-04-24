@@ -1,32 +1,17 @@
-import { defineStore } from "pinia";
+import { routes } from '@/router';
 
-export default defineStore("adminNavListMenu", {
-  state: () => ({
-    navList: [
-      // {
-      //   path: "/admin",
-      //   name: "後台管理",
-      // },
-      {
-        path: "/admin/products",
-        name: "行程管理",
-      },
-      {
-        path: "/admin/article",
-        name: "文章管理",
-      },
-      {
-        path: "/admin/coupon",
-        name: "優惠券管理",
-      },
-      {
-        path: "/admin/orderlist",
-        name: "訂單列表",
-      },
-      // {
-      //   path: "/",
-      //   name: "回到前台",
-      // },
-    ],
-  }),
+export default defineStore('adminNavListMenu', () => {
+  const adminRoute = routes.find((route) => route.path === '/admin');
+  const navList = computed(() =>
+    (adminRoute?.children ?? [])
+      .filter((route) => route.meta?.showInNav)
+      .map((route) => ({
+        path: `/admin/${route.path}`,
+        name: route.meta.navName
+      }))
+  );
+
+  return {
+    navList
+  };
 });
