@@ -1,4 +1,4 @@
-const TOKEN_KEY = 'userToken';
+import { TOKEN_KEY } from '@/constants/appConfig';
 
 export const getAuthToken = () => {
   const cookie = document.cookie.split('; ').find((row) => row.startsWith(`${TOKEN_KEY}=`));
